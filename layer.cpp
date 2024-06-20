@@ -17,21 +17,52 @@ You should have received a copy of the GNU General Public License along with
 openmini. If not, see <https://www.gnu.org/licenses/>.
 
 *******************************************************************************/
-#include "api/bus/pin.hpp"
 #include "api/everything.hpp"
-
-struct pin : openmini::bus::pin {
-	int id;
-	mode mode;
-	pin(int id, enum mode mode) : id(id), mode(mode) {}
+#include "api/main.hpp"
+#include <SDL2pp/Renderer.hh>
+#include <SDL2pp/SDL2pp.hh>
+#include <SDL2pp/Texture.hh>
+#include <SDL2pp/Window.hh>
+#include <cstdint>
+using namespace SDL2pp;
+openmini::screen::screen() {}
+void openmini::screen::draw(uint16_t *buf, uint16_t x, uint16_t y, uint8_t width, uint8_t height) {}
+void openmini::screen::sync() {}
+void openmini::screen::setSync(bool) {}
+struct screen : openmini::screen {
+	uint16_t width = 320,
+			 height = 240;
+	bool canSync = true;
+	uint16_t state[320*240];
+	SDL sdl {SDL_INIT_VIDEO};
+	Window win {"openmini4pc",SDL_WINDOWPOS_UNDEFINED,SDL_WINDOWPOS_UNDEFINED,640,480,0};
+	Renderer render {win,-1,SDL_RENDERER_ACCELERATED};
+	Texture tex {render,SDL_PIXELFORMAT_ARGB1555,SDL_TEXTUREACCESS_STATIC,320,240};
+	bool autoSync = false;
+	void sync() override {
+		tex.Update(Rect(0,0,320,240),state,320*2);
+		render.Copy(tex,Rect(0,0,320,240),Rect(0,0,640,480));
+		render.Present();
+	}
+	void setSync(bool value) override {autoSync=!value;}
+	screen() {}
+	~screen() {}
+	void write(int x, int y, uint16_t z) {
+		if (x<0) return;
+		if (y<0) return;
+		if (x>=width) return;
+		if (x>=height) return;
+		state[y*width+x]=z;
+		if (autoSync) sync();
+	}
+	void draw(uint16_t *buf, uint16_t x0, uint16_t y0, uint8_t width, uint8_t height) override {
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				write(x0+x,y0+y,*buf);
+				++buf;
+			}
+		}
+	}
 };
-pin debug_uart_rx {0, openmini::bus::pin::INPUT};
-pin debug_uart_tx {1, openmini::bus::pin::OUTPUT};
-pin debug_i2c_rx {2, openmini::bus::pin::INPUT};
-pin debug_i2c_tx {3, openmini::bus::pin::OUTPUT};
-pin module_rx {4, openmini::bus::pin::INPUT};
-pin module_tx {4, openmini::bus::pin::OUTPUT};
-static openmini::bus::uart module_uart {module_tx,module_rx};
-
-openmini::modules::protocol openmini::modules::protocol::bus {&module_uart};
-openmini::
+screen builtin_screen;
+openmini::screen &openmini::builtin::screen = builtin_screen;
