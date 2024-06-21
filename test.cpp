@@ -27,7 +27,7 @@ int main(void) {
 		if (openmini::builtin::input.active[openmini::input::button::f2]&&openmini::builtin::input.changed[openmini::input::button::f2]) fillColor=(fillColor&0b1111110000011111)|(((fillColor&0b0000001111100000)+0b0000000000100000)&0b0000001111100000);
 		if (openmini::builtin::input.active[openmini::input::button::f3]&&openmini::builtin::input.changed[openmini::input::button::f3]) fillColor=(fillColor&0b1111111111100000)|(((fillColor&0b0000000000011111)+0b0000000000000001)&0b0000000000011111);
 		if (openmini::builtin::input.active[openmini::input::button::back]&&openmini::builtin::input.changed[openmini::input::button::back]) fillColor=grid[y*16+x];
-		if (openmini::builtin::input.active[openmini::input::button::ok]&&openmini::builtin::input.changed[openmini::input::button::ok]) grid[y*16+x]=fillColor;
+		if (openmini::builtin::input.active[openmini::input::button::ok]) grid[y*16+x]=fillColor;
 		if (openmini::builtin::input.active[openmini::input::button::quit]) break;
 		if (x<0) x=0;
 		if (x>=16) x=15;
