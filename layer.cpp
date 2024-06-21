@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License along with
 openmini. If not, see <https://www.gnu.org/licenses/>.
 
 *******************************************************************************/
+#include "api/bus/pin.hpp"
 #include "api/everything.hpp"
 #include "api/main.hpp"
 #include <SDL2/SDL_events.h>
@@ -39,7 +40,8 @@ openmini. If not, see <https://www.gnu.org/licenses/>.
 #include <vector>
 using namespace SDL2pp;
 openmini::screen::screen() {}
-void openmini::screen::draw(uint16_t *buf, uint16_t x, uint16_t y, uint8_t width, uint8_t height) {}
+void openmini::screen::draw(uint16_t *buf, int16_t x, int16_t y, uint8_t width, uint8_t height) {}
+void openmini::screen::fill(int16_t x, int16_t y, uint8_t width, uint8_t height, uint16_t color) {}
 void openmini::screen::sync() {}
 void openmini::screen::setSync(bool) {}
 struct screen : openmini::screen {
@@ -64,11 +66,11 @@ struct screen : openmini::screen {
 		if (x<0) return;
 		if (y<0) return;
 		if (x>=width) return;
-		if (x>=height) return;
+		if (y>=height) return;
 		state[y*width+x]=z;
 		if (autoSync) sync();
 	}
-	void draw(uint16_t *buf, uint16_t x0, uint16_t y0, uint8_t width, uint8_t height) override {
+	void draw(uint16_t *buf, int16_t x0, int16_t y0, uint8_t width, uint8_t height) override {
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
 				write(x0+x,y0+y,*buf);
@@ -76,10 +78,16 @@ struct screen : openmini::screen {
 			}
 		}
 	}
+	void fill(int16_t x0, int16_t y0, uint8_t width, uint8_t height, uint16_t color) override {
+		for (int y = 0; y < height; y++)
+			for (int x = 0; x < width; x++)
+				write(x0+x,y0+y,color);
+	}
 };
 screen builtin_screen;
 
-int openmini::bus::uart::send(void *buf, int length) {
+openmini::bus::uart::uart(pin &tx, pin &rx) : tx(tx),rx(rx) {}
+int openmini::bus::uart::send(const void *buf, int length) {
 	std::cerr.write(static_cast<const char*>(buf),length);
 	return length;
 }
@@ -164,6 +172,16 @@ struct sdl2input : openmini::input {
 		return flag;
 	}
 };
+std::vector<std::string> openmini::storage::filesystem::ls(std::string) {return {};}
+std::unique_ptr<openmini::storage::file> openmini::storage::filesystem::open(std::string,bool) {return nullptr;}
+void openmini::storage::device::read(uint64_t, void *, uint32_t) {}
+void openmini::storage::device::write(uint64_t, void *, uint32_t) {}
+void openmini::storage::device::sync() {}
+void openmini::storage::file::read(uint64_t, void *, uint32_t) {}
+void openmini::storage::file::write(uint64_t, void *, uint32_t) {}
+void openmini::storage::file::resize(uint64_t) {}
+void openmini::storage::file::close() {}
+bool openmini::input::poll() {return false;}
 struct builtinfs : openmini::storage::filesystem {
 	struct file : openmini::storage::file {
 		const bool readonly;
@@ -200,6 +218,14 @@ struct builtinfs : openmini::storage::filesystem {
 		return files;
 	}
 };
+void openmini::bus::pin::set(bool) {}
+bool openmini::bus::pin::get() {return false;}
+openmini::bus::pin::mode openmini::bus::pin::setMode(openmini::bus::pin::mode) {return INPUT;}
+openmini::bus::pin::mode openmini::bus::pin::getMode() {return INPUT;}
+void openmini::bus::pin::analog::set(float) {}
+float openmini::bus::pin::analog::get() {return 0.0;}
+openmini::bus::pin::mode openmini::bus::pin::analog::setMode(openmini::bus::pin::mode) {return INPUT;}
+openmini::bus::pin::mode openmini::bus::pin::analog::getMode() {return INPUT;}
 sdl2input builtin_input;
 openmini::bus::pin nil_pin;
 openmini::bus::uart builtin_debug_uart{nil_pin,nil_pin};
