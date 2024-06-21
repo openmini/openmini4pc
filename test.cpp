@@ -35,7 +35,7 @@ int main(void) {
 		if (y>=16) y=15;
 	}
 	for (int i = 0; i < 16*16; i++) {
-		std::string str = std::format("{:04x},",grid[i]);
+		std::string str = std::format("0x{:04x},",grid[i]);
 		const char *buf = str.c_str();
 		openmini::builtin::debug.send(buf, strlen(buf));
 	}
