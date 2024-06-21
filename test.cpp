@@ -33,7 +33,6 @@ int main(void) {
 		if (x>=16) x=15;
 		if (y<0) y=0;
 		if (y>=16) y=15;
-		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	}
 	for (int i = 0; i < 16*16; i++) {
 		std::string str = std::format("{:04x},",grid[i]);
