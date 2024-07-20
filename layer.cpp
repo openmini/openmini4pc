@@ -107,64 +107,64 @@ struct sdl2input : openmini::input {
 				bool ka = event.type==SDL_KEYDOWN;
 				switch (event.key.keysym.sym) {
 					case SDLK_RETURN: // OK
+						changed[button::ok]=changed[button::ok]||(active[button::ok]^ka);
 						active[button::ok]=ka;
-						changed[button::ok]=true;
-						flag=true;
+						flag=changed[button::ok];
 						break;
 					case SDLK_UP: // up
+						changed[button::up]=changed[button::up]||(active[button::up]^ka);
 						active[button::up]=ka;
-						changed[button::up]=true;
 						flag=true;
 						break;
 					case SDLK_DOWN: // down
+						changed[button::down]=changed[button::down]||(active[button::down]^ka);
 						active[button::down]=ka;
-						changed[button::down]=true;
-						flag=true;
+						flag=flag||changed[button::down];
 						break;
 					case SDLK_LEFT: // left
+						changed[button::left]=changed[button::left]||(active[button::left]^ka);
 						active[button::left]=ka;
-						changed[button::left]=true;
-						flag=true;
+						flag=flag||changed[button::left];
 						break;
 					case SDLK_RIGHT: // right
+						changed[button::right]=changed[button::right]||(active[button::right]^ka);
 						active[button::right]=ka;
-						changed[button::right]=true;
-						flag=true;
+						flag=flag||changed[button::right];
 						break;
 					case SDLK_BACKSPACE: // back
+						changed[button::back]=changed[button::back]||(active[button::back]^ka);
 						active[button::back]=ka;
-						changed[button::back]=true;
-						flag=true;
+						flag=flag||changed[button::back];
 						break;
 					case SDLK_h: // home
+						changed[button::home]=changed[button::home]||(active[button::home]^ka);
 						active[button::home]=ka;
-						changed[button::home]=true;
-						flag=true;
+						flag=flag||changed[button::home];
 						break;
 					case SDLK_m: // menu
+						changed[button::menu]=changed[button::menu]||(active[button::menu]^ka);
 						active[button::menu]=ka;
-						changed[button::menu]=true;
-						flag=true;
+						flag=flag||changed[button::menu];
 						break;
 					case SDLK_ESCAPE: // quit
+						changed[button::quit]=changed[button::quit]||(active[button::quit]^ka);
 						active[button::quit]=ka;
-						changed[button::quit]=true;
-						flag=true;
+						flag=flag||changed[button::quit];
 						break;
 					case SDLK_1: // f1
+						changed[button::f1]=changed[button::f1]||(active[button::f1]^ka);
 						active[button::f1]=ka;
-						changed[button::f1]=true;
-						flag=true;
+						flag=flag||changed[button::f1];
 						break;
 					case SDLK_2: // f2
+						changed[button::f2]=changed[button::f2]||(active[button::f2]^ka);
 						active[button::f2]=ka;
-						changed[button::f2]=true;
-						flag=true;
+						flag=flag||changed[button::f2];
 						break;
 					case SDLK_3: // f3
+						changed[button::f3]=changed[button::f3]||(active[button::f3]^ka);
 						active[button::f3]=ka;
-						changed[button::f3]=true;
-						flag=true;
+						flag=flag||changed[button::f3];
 						break;
 				}
 			}
