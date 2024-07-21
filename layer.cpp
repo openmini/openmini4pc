@@ -2803,12 +2803,12 @@ const uint8_t font[256][18] = {
 	}
 };
 
-uint16_t font_buf[16*9];
+static uint16_t font_buf[16*9];
 void drawchar(uint8_t chr) {
 	uint16_t *buf = font_buf;
-	for (int j = 0; j < 18;) {
+	for (int j = 0; j < 18; ++j) {
 		uint8_t x = font[chr][j];
-		for (int k = 0; k < 8; k++) {
+		for (int k = 0; k < 8; ++k) {
 			*buf++ = ((x&1)?0xFFFF:0x8000);
 			x>>=1;
 		}
