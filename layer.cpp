@@ -44,8 +44,6 @@ void openmini::screen::fill(int16_t x, int16_t y, uint8_t width, uint8_t height,
 void openmini::screen::sync() {}
 void openmini::screen::setSync(bool) {}
 struct screen : openmini::screen {
-	uint16_t width = 320,
-			 height = 240;
 	bool canSync = true;
 	uint16_t state[320*240];
 	SDL sdl {SDL_INIT_VIDEO};
@@ -59,7 +57,10 @@ struct screen : openmini::screen {
 		render.Present();
 	}
 	void setSync(bool value) override {autoSync=!value;}
-	screen() {}
+	screen() {
+		width=320;
+		height=240;
+	}
 	~screen() {}
 	void write(int x, int y, uint16_t z) {
 		if (x<0) return;
@@ -2867,7 +2868,7 @@ void openmini::screen::console::print(const std::string str) {
 		case '\n': if (++pos_y>=height) {scroll(*this);pos_y=height-1;} break;
 		case '\t': pos_x+=4; if (pos_x>=width) pos_x=width; break;
 		case '\f': clear(*this); pos_x=0;pos_y=0; break;
-		case '\b': if (--pos_x<0) pos_x=0; break;
+		case '\b': if (--pos_x>=width) pos_x=0; break;
 		default:
 			if (pos_x>=width) {
 				pos_x=0;
