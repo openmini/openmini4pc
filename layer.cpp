@@ -2865,7 +2865,7 @@ void openmini::screen::console::print(const std::string str) {
 	for (uint8_t chr : str) {
 		switch (chr) {
 		case '\r': pos_x=0; break;
-		case '\n': if (++pos_y>=height) {scroll(*this);pos_y=height-1;} break;
+		case '\n': pos_x=0; if (++pos_y>=height) {scroll(*this);pos_y=height-1;} break;
 		case '\t': pos_x+=4; if (pos_x>=width) pos_x=width; break;
 		case '\f': clear(*this); pos_x=0;pos_y=0; break;
 		case '\b': if (--pos_x>=width) pos_x=0; break;
